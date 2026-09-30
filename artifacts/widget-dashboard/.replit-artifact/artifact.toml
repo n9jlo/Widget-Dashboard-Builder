@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Widget Dashboard"
+description = "An editable dashboard builder for arranging low-level data display widgets, with live telemetry delivered from a Node.js backend over WebSockets."
+version = "1.0.0"
+id = "artifacts/widget-dashboard"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22209
+
+[services.development]
+run = "pnpm --filter @workspace/widget-dashboard run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/widget-dashboard", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/widget-dashboard/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22209"
+BASE_PATH = "/"

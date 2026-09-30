@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: telemetry
+    description: Live dashboard telemetry
 paths:
   /healthz:
     get:
@@ -24,6 +26,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /telemetry/snapshot:
+    get:
+      operationId: getTelemetrySnapshot
+      tags: [telemetry]
+      summary: Get the available telemetry sources and latest readings
+      responses:
+        "200":
+          description: Initial source catalog and recent sample values
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelemetrySnapshot"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +47,48 @@ components:
           type: string
       required:
         - status
+    TelemetrySnapshot:
+      type: object
+      properties:
+        generatedAt:
+          type: string
+          format: date-time
+        sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/TelemetrySource"
+      required:
+        - generatedAt
+        - sources
+    TelemetrySource:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        unit:
+          type: string
+        value:
+          type: number
+        min:
+          type: number
+        max:
+          type: number
+        status:
+          type: string
+          enum: [active, warning, idle]
+        history:
+          type: array
+          items:
+            type: number
+      required:
+        - key
+        - label
+        - unit
+        - value
+        - min
+        - max
+        - status
+        - history
 
